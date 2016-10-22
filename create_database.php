@@ -68,24 +68,19 @@ else if($_REQUEST['act']=="gs_login")
 
 else if($_REQUEST['act']=="gs_list")
 { 
- // echo "ram";die();
+  //echo "ram";die();
     $req           =  new userdataservice();
     $res           =  $req->getList();
     if($res)
     {   
-//print_r($res);die();
-     // print_r($res[0]['description']);die;
-
-      //echo $res['description'];die();
-
-      // preg_replace("/[^a-zA-Z 0-9]+/", "", $res['description']);
-        $data = array('data'=>$res,'status'=>'1');
-        
+  //foreach ($res as $key => $value)
+  // {
+     // $value['description']  = preg_replace("/[^a-zA-Z 0-9]+/", "", $value['description']);
+      //$value
+       $data = array('data'=>$res,'status'=>'1');
        echo json_encode($data);
-       //print_r($data);die();
-
-       //print_r($data);
-    }
+    //}
+   }
     else
     {
        $data = array('data'=>'0' , 'status'=>'0');
@@ -132,11 +127,7 @@ else if($_REQUEST['act']=="gs_location")
         echo json_encode($data);
     }
 }
-
-
 /****************************Searching The Resources *******************************/
-
-
 
 else if($_REQUEST['act']=="gs_search")
 {
@@ -144,22 +135,82 @@ else if($_REQUEST['act']=="gs_search")
    $sports       =  urldecode((@$_POST ['sports']));
    $location     =  urldecode(@($_POST ['location']));
    $topic        =  urldecode(@($_POST ['topic']));
-   //$para         =  urldecode(@($_POST ['para']));
+   $req          =  new userdataservice();
+   $where = '';
+   $flag = 0;
+       if(isset($sports) && trim($sports) != '')
+       {
+       $flag =1;
+       $where .= " `sport`='$sports'";
+       }
+      if(isset($location) && trim($location) != '')
+      {
+        if($flag == 1)
+        {
+          $and = ' AND ';
+        }
+        else
+        {
+          $and = '';
+          $flag =1;
+        }
+        $where .= $and." `location`='$location'";
+       }
+    if(isset($topic) && trim($topic) != '')
+    {
+      if($flag == 1)
+      {
+          $and = ' AND ';
+      } 
+      else
+      {
+          $and = '';
+          $flag =1;
+      }
+        $where .= $and." `title`='$topic'";
+    }
 
-     //echo "ram";die();
-    $req           =  new userdataservice();
-     //$where      =  "WHERE `email` = '".$email."'";
-    //$fwhere="WHERE `sport`='$sports' OR `location`='$location' OR `title`='$topic'";
-
-    $res           =  $req->GetSearch($key,$sports,$location,$topic,$key);
+    if((isset($key) && trim($key) != '') && $flag == 1)
+    {
+        $where .= " AND `description` like '%$key%'";
+    }
+    if($where != '')
+    {
+      //echo "sasaa"; exit;   
+   $res         =  $req->GetSearch($where);
+    }
+    else
+    {
+      $data = array('data'=>'0' , 'status'=>'0');
+        echo json_encode($data);exit;
+          }
     if($res)
     {   
 
-      //$data = array('location'=>$res);
         $data = array('data'=>$res,'status'=>'1');
-        
-       echo json_encode($data);
+        echo json_encode($data);
   
+    }
+    else
+    {
+        $data = array('data'=>'0' , 'status'=>'0');
+        echo json_encode($data);
+    }
+}
+  
+
+
+/****************************Details of Resources *******************************/
+
+else if($_REQUEST['act']=="gs_detail")
+{ 
+  $userid         =  urldecode(($_POST ['id']));
+  $req             =  new userdataservice();
+  $res             =  $req->getDetail($userid);
+    if($res)
+    {   
+        $data = array('data'=>$res,'status'=>'1');
+        echo json_encode($data);
     }
     else
     {
@@ -178,4 +229,20 @@ else if($_REQUEST['act']=="gs_search")
 
 
 
+
+
+
+
+
 ?>
+
+
+
+
+
+
+
+
+
+
+

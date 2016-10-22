@@ -39,7 +39,19 @@ $query =mysql_query("INSERT INTO `gs_signup`(`id`, `name`, `email`, `password`) 
   }
 
 /****************************Sign In GetSporty [Function]*******************************/
+// public function utf8ize($d) {
+//     if (is_array($d)) {
+//         foreach ($d as $k => $v) {
+//             $d[$k] = utf8ize($v);
+//         }
+//     } else if (is_string ($d)) {
+//         return utf8_encode($d);
+//     }
+//     return $d;
+// }
+/*****************/
 
+/****************************Sign In GetSporty [Function]*******************************/
 public function gsSignIn($email,$password1)
 {
 $query = mysql_query("SELECT `name`, `email` FROM `gs_signup` WHERE `email` = '$email' AND `password` = '$password1' ");
@@ -181,9 +193,7 @@ $query = mysql_query("SELECT `city` FROM `location` where `status`=1 ");
    {
   
     $data[] = $row;
-   // print_r($row);die();
-  //foreach ($data as  $value) {
-   // print_r($value);die();
+   
 }
 //foreach ($data as  $value) 
 //{
@@ -212,19 +222,13 @@ $query = mysql_query("SELECT `city` FROM `location` where `status`=1 ");
 }
 
 
-/********************Seraching******************************/
-public function GetSearch( $key,$sports,$location,$topic,$key)
-  {
-  // echo "$topic";die();
-    //echo "$fwhere";die();
-   // SELECT * FROM `gs_resources` WHERE `sport`='Hocky' OR `location`='Gorakhpur' OR `title`='Hello1'
-    //GetSearch( $key,$sports,$location,$topic)
-     //$query  = mysql_query("SELECT * FROM `gs_signup` ".$where);
+/******************** New Seraching******************************/
 
-     $query = mysql_query("SELECT * FROM `gs_resources` where `sport`='$sports' OR `location`='$location' OR `title`='$topic' OR `description`='$key' ");
-     //echo $topic;
-     //echo $query;die();
- $query1 = $query;
+
+public function GetSearch( $where)
+  {
+      $query = mysql_query("SELECT * FROM `gs_resources` where ".$where);
+      $query1 = $query;
 if(mysql_num_rows($query1) > 0)
 {
 while($row = mysql_fetch_assoc($query1))
@@ -242,6 +246,34 @@ else
 
 
 
+/************************ Get Details of Resources*****************/
+
+public function getDetail($userid)
+{
+ // echo "SELECT * FROM `gs_resources` where `id`=$userid "; die();
+$query = mysql_query("SELECT * FROM `gs_resources` where `id`=$userid ");
+if(mysql_num_rows($query)>0)
+{
+while ($row = mysql_fetch_assoc($query))
+{
+$data[] = $row;
+}
+return $data;
+}
+else
+{
+return 0;
+}
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -254,6 +286,3 @@ else
 
 
 } // End Class
-
-
-?>
